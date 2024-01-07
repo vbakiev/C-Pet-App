@@ -22,14 +22,16 @@ namespace AnimalProject {
             string animalPhysicalDescription = "";
             string animalPersonalityDescription = "";
             string animalNickname = "";
+            string suggestedDonation = "";
 
             // variables that support data entry
             int maxPets = 8;
             string readResult;
             string menuSelection = "";
+            decimal decimalDonation = 0.00m;
 
             // array used to store runtime data, there is no persisted data
-            string[,] ourAnimals = new string[maxPets, 6];
+            string[,] ourAnimals = new string[maxPets, 7];
 
             // TODO: Convert the if-elseif-else construct to a switch statement
 
@@ -42,6 +44,7 @@ namespace AnimalProject {
                         animalPhysicalDescription = "medium sized cream colored female golden retriever weighing about 65 pounds. housebroken.";
                         animalPersonalityDescription = "loves to have her belly rubbed and likes to chase her tail. gives lots of kisses.";
                         animalNickname = "lola";
+                        suggestedDonation = "85.00";
                         break;
 
                     case 1:
@@ -51,6 +54,7 @@ namespace AnimalProject {
                         animalPhysicalDescription = "large reddish-brown male golden retriever weighing about 85 pounds. housebroken.";
                         animalPersonalityDescription = "loves to have his ears rubbed when he greets you at the door, or at any time! loves to lean-in and give doggy hugs.";
                         animalNickname = "loki";
+                        suggestedDonation = "49.99";
                         break;
 
                     case 2:
@@ -60,6 +64,7 @@ namespace AnimalProject {
                         animalPhysicalDescription = "small white female weighing about 8 pounds. litter box trained.";
                         animalPersonalityDescription = "friendly";
                         animalNickname = "Puss";
+                        suggestedDonation = "40.00";
                         break;
 
                     case 3:
@@ -69,6 +74,7 @@ namespace AnimalProject {
                         animalPhysicalDescription = "tbd";
                         animalPersonalityDescription = "tbd";
                         animalNickname = "tbd";
+                        suggestedDonation = "";
                         break;
 
                     default:
@@ -78,6 +84,7 @@ namespace AnimalProject {
                         animalPhysicalDescription = "";
                         animalPersonalityDescription = "";
                         animalNickname = "";
+                        suggestedDonation = "";
                         break;
 
                 }
@@ -88,6 +95,12 @@ namespace AnimalProject {
                 ourAnimals[i, 3] = "Nickname: " + animalNickname;
                 ourAnimals[i, 4] = "Physical description: " + animalPhysicalDescription;
                 ourAnimals[i, 5] = "Personality: " + animalPersonalityDescription;
+                ourAnimals[i, 6] = "SuggestedDonation: " + suggestedDonation;
+
+                if (!decimal.TryParse(suggestedDonation, out decimalDonation)) {
+                    decimalDonation = 45.00m; // if suggestedDonation NOT a number, default to 45.00
+                }
+                ourAnimals[i, 6] = $"Suggested Donation: {decimalDonation:C2}";
             }
 
             // display the top-level menu options
@@ -128,7 +141,7 @@ namespace AnimalProject {
                         for (int i = 0; i < maxPets; i++) {
                             if (ourAnimals[i, 0] != "ID #: ") {
 
-                                for (int j = 0; j < 6; j++) {
+                                for (int j = 0; j < 7; j++) {
                                     {
                                         Console.WriteLine(ourAnimals[i, j]);
                                     }
@@ -381,7 +394,44 @@ namespace AnimalProject {
                         readResult = Console.ReadLine();
                         break;
                     case "8":
-                        Console.WriteLine("Challenge Project - please check back soon to see progress.");
+
+                        string dogCharacteristic = "";
+                        string dogChar = "";
+
+                        while(dogCharacteristic == "") {
+                            Console.WriteLine($"\nEnter one desired dog characteristic to search for: ");
+                            readResult = Console.ReadLine();
+                            if(readResult != null) {
+                                dogCharacteristic = readResult.ToLower().Trim();
+                            }
+                        }
+
+                        Console.WriteLine($"Details Matched for: {dogCharacteristic} \n");
+
+                        int indexFound = 0;
+
+                        for (int i = 0; i < maxPets; i++) {
+                            if (ourAnimals[i, 1].Contains("dog")) {
+                                dogChar = ourAnimals[i, 4].ToLower().Trim();
+                                
+                                if (dogChar.Contains(dogCharacteristic)) {
+                                    indexFound++;
+                                    Console.WriteLine(ourAnimals[i, 0]);
+                                    Console.WriteLine(ourAnimals[i, 1]);
+                                    Console.WriteLine(ourAnimals[i, 3]);
+                                    Console.WriteLine(ourAnimals[i, 2]);
+                                    Console.WriteLine(ourAnimals[i, 5]);
+                                    Console.WriteLine(ourAnimals[i, 4]);
+                                    Console.WriteLine(ourAnimals[i, 6]);
+                                    Console.WriteLine();
+                                }
+                            }
+                            if (!dogChar.Contains(dogCharacteristic) && indexFound == 0) {
+                                Console.WriteLine($"Sorry couldn't find any details matching the keyword: {dogCharacteristic} \n");
+                                break;
+                            }
+                        }
+                        
                         Console.WriteLine("Press the Enter key to continue.");
                         readResult = Console.ReadLine();
                         break;
