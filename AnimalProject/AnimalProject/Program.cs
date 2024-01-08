@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AnimalProject {
@@ -29,6 +30,7 @@ namespace AnimalProject {
             string readResult;
             string menuSelection = "";
             decimal decimalDonation = 0.00m;
+            string check = "Physical description: ";
 
             // array used to store runtime data, there is no persisted data
             string[,] ourAnimals = new string[maxPets, 7];
@@ -156,7 +158,6 @@ namespace AnimalProject {
 
                     case "2":
 
-                        string anotherPet = "y";
                         int petCount = 0;
 
                         for(int i = 0; i < maxPets; i++) {
@@ -164,11 +165,17 @@ namespace AnimalProject {
                                 petCount++;
                             }
                         }
-                        
+
                         if (petCount < maxPets) {
                             Console.WriteLine($"We curreny have {petCount} pets that need homes. We can manage {maxPets - petCount} more");
                         }
-
+                        else {
+                            Console.WriteLine("We have reached the limit, cannot add more pets");
+                            Console.WriteLine("Press the Enter key to continue");
+                            readResult = Console.ReadLine();
+                            break;
+                        }
+                            
                         bool validEntry = false;
 
                         // get species (cat or dog) - string animalSpecies is a required field 
@@ -247,44 +254,39 @@ namespace AnimalProject {
 
                         } while (animalNickname == "");
 
-                        //Store the pets information in array
-                        ourAnimals[petCount, 0] = "ID #: " + animalID;
-                        ourAnimals[petCount, 1] = "Species: " + animalSpecies;
-                        ourAnimals[petCount, 2] = "Age: " + animalAge;
-                        ourAnimals[petCount, 3] = "Nickname: " + animalNickname;
-                        ourAnimals[petCount, 4] = "Physical description: " + animalPhysicalDescription;
-                        ourAnimals[petCount, 5] = "Personality: " + animalPersonalityDescription;
-
-                        while (anotherPet == "y" && petCount < maxPets) {
-
-                            petCount++;
-                            if (petCount < maxPets) {
-                                Console.WriteLine("Would you like to add a new pet? Enter (y/n)");
-
-                                do {
-                                    readResult = Console.ReadLine();
-                                    if (readResult != null) {
-                                        anotherPet = readResult.ToLower();
-                                    }
-
-                                } while (anotherPet != "y" && anotherPet != "n");
-
-                            }
-                        }
-
-                        if(petCount >= maxPets) {
-                            Console.WriteLine("We have reached the limit, cannot add more pets");
-                            Console.WriteLine("Press the Enter key to continue");
-                            readResult = Console.ReadLine();  
-                        }
-
-
-                        Console.WriteLine("Press the Enter key to continue.");
+                        Console.WriteLine("Would you like to add the pet to list? (y/n)");
                         readResult = Console.ReadLine();
+                        if (readResult != null && readResult.ToLower() == "y") {
+                            Console.WriteLine("\nPet successfully added to the list! \n");
+                            Console.WriteLine("Press the Enter key to continue.");
+                            readResult = Console.ReadLine();
+                            //Add to list
+                            do {
+                                if (petCount < maxPets) {
+
+                                    // Store the pet's information in array
+                                    ourAnimals[petCount, 0] = "ID #: " + animalID;
+                                    ourAnimals[petCount, 1] = "Species: " + animalSpecies;
+                                    ourAnimals[petCount, 2] = "Age: " + animalAge;
+                                    ourAnimals[petCount, 3] = "Nickname: " + animalNickname;
+                                    ourAnimals[petCount, 4] = "Physical description: " + animalPhysicalDescription;
+                                    ourAnimals[petCount, 5] = "Personality: " + animalPersonalityDescription;
+                                    petCount++;
+                                    break;
+                                }
+                            } while (petCount < maxPets);
+                        }
+                        else {
+                            Console.WriteLine("\nPet has not been added to the list\n");
+                            Console.WriteLine("Press the Enter key to continue.");
+                            readResult = Console.ReadLine();
+                            break;
+                        }
+
                         break;
 
                     ////Ensure pet's Age and Physical descriptions are updated
-
+                    ///
                     case "3":
 
                         bool validAgeEntry = false;
@@ -388,34 +390,37 @@ namespace AnimalProject {
                         Console.WriteLine("Press the Enter key to continue.");
                         readResult = Console.ReadLine();
                         break;
+
                     case "7":
-                        Console.WriteLine("Challenge Project - please check back soon to see progress.");
-                        Console.WriteLine("Press the Enter key to continue.");
-                        readResult = Console.ReadLine();
-                        break;
-                    case "8":
 
-                        string dogCharacteristic = "";
-                        string dogChar = "";
+                        string catCharacteristic = "";
+                        string catChar = "";
+                        string catSubstring = "";
 
-                        while(dogCharacteristic == "") {
-                            Console.WriteLine($"\nEnter one desired dog characteristic to search for: ");
+                        while (catCharacteristic == "") {
+                            Console.WriteLine($"\nEnter one desired cat characteristic to search for: ");
                             readResult = Console.ReadLine();
-                            if(readResult != null) {
-                                dogCharacteristic = readResult.ToLower().Trim();
+                            if (readResult != null) {
+                                catCharacteristic = readResult.ToLower().Trim();
                             }
                         }
 
-                        Console.WriteLine($"Details Matched for: {dogCharacteristic} \n");
+                        for (int i = 0; i < 7; i++) {
+                            Console.Write(".");
+                            Thread.Sleep(500); // Adjust the sleep duration to control the animation speed
+                        }
 
-                        int indexFound = 0;
+                        Console.WriteLine($"\nSearch completed, details matching keyword: {catCharacteristic} \n");
+
+                        int indexCatFound = 0;
 
                         for (int i = 0; i < maxPets; i++) {
-                            if (ourAnimals[i, 1].Contains("dog")) {
-                                dogChar = ourAnimals[i, 4].ToLower().Trim();
-                                
-                                if (dogChar.Contains(dogCharacteristic)) {
-                                    indexFound++;
+                            if (ourAnimals[i, 1].Contains("cat")) {
+                                catChar = ourAnimals[i, 4].ToLower().Trim();
+                                catSubstring = catChar.Remove(0, check.Length);
+
+                                if (catSubstring.Contains(catCharacteristic)) {
+                                    indexCatFound++;
                                     Console.WriteLine(ourAnimals[i, 0]);
                                     Console.WriteLine(ourAnimals[i, 1]);
                                     Console.WriteLine(ourAnimals[i, 3]);
@@ -426,12 +431,63 @@ namespace AnimalProject {
                                     Console.WriteLine();
                                 }
                             }
-                            if (!dogChar.Contains(dogCharacteristic) && indexFound == 0) {
-                                Console.WriteLine($"Sorry couldn't find any details matching the keyword: {dogCharacteristic} \n");
-                                break;
+                        }
+
+                        if (indexCatFound == 0) {
+                            Console.WriteLine($"Sorry couldn't find any details matching the keyword: {catCharacteristic} \n");
+                        }
+
+                        Console.WriteLine("Press the Enter key to continue.");
+                        readResult = Console.ReadLine();
+                        break;
+
+
+                    case "8":
+
+                        string dogCharacteristic = "";
+                        string dogChar = "";
+                        string dogSubstring = "";
+
+                        while(dogCharacteristic == "") {
+                            Console.WriteLine($"\nEnter one desired dog characteristic to search for: ");
+                            readResult = Console.ReadLine();
+                            if(readResult != null) {
+                                dogCharacteristic = readResult.ToLower().Trim();
                             }
                         }
-                        
+
+                        for (int i = 0; i < 7; i++) {
+                            Console.Write(".");
+                            Thread.Sleep(500); // Adjust the sleep duration to control the animation speed
+                        }
+
+                        Console.WriteLine($"\nSearch completed, details matching keyword: {dogCharacteristic} \n");
+
+                        int indexDogFound = 0;
+
+                        for (int i = 0; i < maxPets; i++) {
+                            if (ourAnimals[i, 1].Contains("dog")) {
+                                dogChar = ourAnimals[i, 4].ToLower().Trim();
+                                dogSubstring = dogChar.Remove(0, check.Length);
+
+                                if (dogSubstring.Contains(dogCharacteristic)) {
+                                    indexDogFound++;
+                                    Console.WriteLine(ourAnimals[i, 0]);
+                                    Console.WriteLine(ourAnimals[i, 1]);
+                                    Console.WriteLine(ourAnimals[i, 3]);
+                                    Console.WriteLine(ourAnimals[i, 2]);
+                                    Console.WriteLine(ourAnimals[i, 5]);
+                                    Console.WriteLine(ourAnimals[i, 4]);
+                                    Console.WriteLine(ourAnimals[i, 6]);
+                                    Console.WriteLine();
+                                }
+                            }
+                        }
+
+                        if (indexDogFound == 0) {
+                            Console.WriteLine($"Sorry couldn't find any details matching the keyword: {dogCharacteristic} \n");
+                        }
+
                         Console.WriteLine("Press the Enter key to continue.");
                         readResult = Console.ReadLine();
                         break;
